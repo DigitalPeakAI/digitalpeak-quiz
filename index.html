@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welche Aufgaben könnte ein KI-Mitarbeiter für dich übernehmen? – DigitalPeak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #07111f;
+      --navy2: #0d1f35;
+      --blue: #1a6cf6;
+      --blue2: #0fa3e0;
+      --accent: #00e5ff;
+      --green: #00c896;
+      --red: #ff4d6d;
+      --text: #e8f0fe;
+      --muted: #7a90b0;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px 16px 60px;
+    }
+
+    /* BG glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse, rgba(26,108,246,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      width: 100%; max-width: 640px;
+      position: relative; z-index: 1;
+    }
+
+    /* LOGO / BRAND */
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 36px;
+      padding-top: 8px;
+    }
+    .brand-dot {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 14px; color: #fff;
+    }
+    .brand-name { font-weight: 700; font-size: 16px; color: var(--text); }
+    .brand-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    /* PROGRESS */
+    .progress-wrap {
+      margin-bottom: 28px;
+    }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: var(--muted); margin-bottom: 10px;
+    }
+    .progress-bar-bg {
+      height: 6px; background: var(--border);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--accent));
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      backdrop-filter: blur(12px);
+    }
+
+    /* INTRO SCREEN */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(26,108,246,0.15);
+      border: 1px solid rgba(26,108,246,0.3);
+      border-radius: 99px;
+      padding: 6px 14px;
+      font-size: 12px; font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .intro-badge::before { content: '⚡'; }
+
+    .intro h1 {
+      font-size: clamp(24px, 5vw, 32px);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .intro h1 span {
+      background: linear-gradient(90deg, var(--blue), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .intro p {
+      font-size: 16px; color: var(--muted);
+      line-height: 1.6; margin-bottom: 28px;
+    }
+
+    .stats-row {
+      display: flex; gap: 12px; margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      flex: 1; min-width: 120px;
+    }
+    .stat-chip strong { display: block; font-size: 20px; font-weight: 800; color: var(--accent); }
+
+    /* QUESTION SCREEN */
+    .q-number {
+      font-size: 12px; font-weight: 600; color: var(--accent);
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .q-text {
+      font-size: clamp(18px, 4vw, 22px);
+      font-weight: 700; line-height: 1.3;
+      margin-bottom: 28px;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 15px;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+    .option:hover {
+      border-color: rgba(26,108,246,0.5);
+      background: rgba(26,108,246,0.08);
+      transform: translateY(-1px);
+    }
+    .option.selected {
+      border-color: var(--blue);
+      background: rgba(26,108,246,0.15);
+    }
+    .option-letter {
+      width: 32px; height: 32px; flex-shrink: 0;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--muted);
+      transition: all 0.2s;
+    }
+    .option.selected .option-letter {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+    .option-emoji { font-size: 18px; flex-shrink: 0; }
+
+    /* SCORE REVEAL */
+    .score-reveal { text-align: center; }
+    .score-ring-wrap {
+      position: relative; display: inline-block;
+      margin: 8px auto 24px;
+    }
+    .score-ring {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: conic-gradient(var(--blue) 0%, var(--accent) var(--pct, 0%), rgba(255,255,255,0.06) var(--pct, 0%));
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .score-ring::before {
+      content: '';
+      position: absolute; inset: 12px;
+      background: var(--navy);
+      border-radius: 50%;
+    }
+    .score-inner {
+      position: relative; z-index: 1; text-align: center;
+    }
+    .score-number {
+      font-size: 38px; font-weight: 900;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .score-max { font-size: 14px; color: var(--muted); margin-top: -4px; }
+
+    .score-label {
+      display: inline-block;
+      padding: 6px 18px; border-radius: 99px;
+      font-size: 13px; font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .score-label.low { background: rgba(255,77,109,0.15); color: var(--red); border: 1px solid rgba(255,77,109,0.3); }
+    .score-label.mid { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.3); }
+    .score-label.high { background: rgba(0,200,150,0.15); color: var(--green); border: 1px solid rgba(0,200,150,0.3); }
+
+    .insight-box {
+      background: rgba(255,77,109,0.08);
+      border: 1px solid rgba(255,77,109,0.2);
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-align: left;
+      margin: 20px 0;
+    }
+    .insight-box.good {
+      background: rgba(0,200,150,0.08);
+      border-color: rgba(0,200,150,0.2);
+    }
+    .insight-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--red); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .insight-box.good .insight-title { color: var(--green); }
+    .insight-text { font-size: 15px; line-height: 1.6; color: var(--text); }
+
+    .teaser-blur {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+      margin: 16px 0;
+      font-size: 14px; color: var(--muted);
+      line-height: 1.8;
+    }
+    .teaser-unlock {
+      text-align: center;
+      font-size: 14px; color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .teaser-unlock strong { color: var(--text); }
+
+    /* LEAD CAPTURE */
+    .lead-heading {
+      font-size: clamp(20px, 4vw, 26px);
+      font-weight: 800; margin-bottom: 8px;
+    }
+    .lead-sub {
+      font-size: 15px; color: var(--muted);
+      line-height: 1.6; margin-bottom: 24px;
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    .input-wrap { position: relative; }
+    .input-wrap label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .input-wrap input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px; color: var(--text);
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .input-wrap input::placeholder { color: var(--muted); }
+    .input-wrap input:focus { border-color: var(--blue); }
+
+    .privacy-note {
+      font-size: 12px; color: var(--muted);
+      display: flex; align-items: flex-start; gap: 6px;
+      margin-bottom: 20px; line-height: 1.5;
+    }
+    .privacy-note::before { content: '🔒'; flex-shrink: 0; margin-top: 1px; }
+
+    /* RESULT SCREEN */
+    .result-header { margin-bottom: 28px; }
+    .result-name-hi {
+      font-size: 14px; color: var(--accent);
+      font-weight: 600; margin-bottom: 8px;
+    }
+    .result-heading {
+      font-size: clamp(20px, 4vw, 26px);
+      font-weight: 800; line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    .metrics-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 24px;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 26px; font-weight: 900;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .metric-label { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+    .roadmap {
+      background: rgba(26,108,246,0.07);
+      border: 1px solid rgba(26,108,246,0.2);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .roadmap-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--accent); margin-bottom: 14px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .roadmap-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-bottom: 12px;
+    }
+    .roadmap-item:last-child { margin-bottom: 0; }
+    .roadmap-num {
+      width: 24px; height: 24px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #fff;
+    }
+    .roadmap-text { font-size: 14px; line-height: 1.5; }
+    .roadmap-text strong { display: block; font-weight: 700; }
+    .roadmap-text span { color: var(--muted); font-size: 13px; }
+
+    .cta-box {
+      background: linear-gradient(135deg, rgba(26,108,246,0.15), rgba(0,229,255,0.08));
+      border: 1px solid rgba(26,108,246,0.3);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .cta-box p {
+      font-size: 14px; color: var(--muted);
+      line-height: 1.6; margin-bottom: 16px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: block; width: 100%;
+      padding: 16px 24px;
+      border-radius: 14px;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; border: none;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(26,108,246,0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(26,108,246,0.5);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      margin-top: 10px;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    .btn-cta {
+      background: linear-gradient(135deg, var(--green), #00a87a);
+      color: #fff;
+      font-size: 17px;
+      box-shadow: 0 4px 24px rgba(0,200,150,0.35);
+    }
+    .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,200,150,0.5); }
+
+    .btn-next-wrap { margin-top: 24px; }
+
+    /* UTILITY */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .mb-16 { margin-bottom: 16px; }
+
+    .comparison-bar {
+      margin: 20px 0;
+    }
+    .comp-row { margin-bottom: 14px; }
+    .comp-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .comp-label strong { color: var(--text); }
+    .comp-track { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .comp-fill { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+    .comp-fill.you { background: linear-gradient(90deg, var(--red), #ff8c42); }
+    .comp-fill.avg { background: linear-gradient(90deg, var(--blue), var(--accent)); }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .card { padding: 22px 18px; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.4s ease forwards; }
+
+    @keyframes countUp {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- BRAND -->
+  <div class="brand">
+    <div class="brand-dot">DP</div>
+    <div>
+      <div class="brand-name">DigitalPeak</div>
+      <div class="brand-sub">AI Agentur Köln</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS (hidden on intro/result) -->
+  <div class="progress-wrap hidden" id="progressWrap">
+    <div class="progress-label">
+      <span id="progressText">Frage 1 von 5</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 0: INTRO ============ -->
+  <div id="screen-intro" class="card fade-up">
+    <div class="intro-badge">Nur 5 Fragen · dauert 2 Minuten</div>
+    <h1>Welche Aufgaben könnte ein<br><span>KI-Mitarbeiter für dich übernehmen?</span></h1>
+    <p>Stell dir vor: Ein Mitarbeiter, der <strong style="color:var(--text);">nie krank wird, 24/7 Anfragen beantwortet</strong> und 90% weniger kostet als eine Teilzeitkraft. Beantworte 5 kurze Fragen – und ich zeige dir konkret, wie viele Stunden dein Betrieb jede Woche verliert.</p>
+
+    <div class="stats-row">
+      <div class="stat-chip">
+        <strong>~12h</strong>
+        verlieren Handwerker ø pro Woche durch Aufgaben, die KI erledigen könnte
+      </div>
+      <div class="stat-chip">
+        <strong>3 von 4</strong>
+        Betrieben verlieren Kunden, weil sie zu langsam antworten
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startQuiz()">
+      👉 Jetzt herausfinden – kostenlos & in 2 Min.
+    </button>
+    <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">
+      Keine Kreditkarte · Kein Fachjargon · Nur ehrliche Antworten
+    </p>
+  </div>
+
+  <!-- ============ SCREEN 1–5: FRAGEN ============ -->
+  <div id="screen-questions" class="card fade-up hidden"></div>
+
+  <!-- ============ SCREEN 6: SCORE REVEAL ============ -->
+  <div id="screen-score" class="card fade-up hidden">
+    <div class="score-reveal">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Dein Ergebnis</p>
+      <div class="score-ring-wrap">
+        <div class="score-ring" id="scoreRing">
+          <div class="score-inner">
+            <div class="score-number" id="scoreNum">0</div>
+            <div class="score-max">von 100</div>
+          </div>
+        </div>
+      </div>
+      <div class="score-label" id="scoreLabel">–</div>
+      <p id="scoreHeadline" style="font-size:18px;font-weight:700;margin-bottom:16px;"></p>
+
+      <div class="insight-box" id="insightBox">
+        <div class="insight-title" id="insightTitle">⚠️ Dein größtes Problem</div>
+        <div class="insight-text" id="insightText"></div>
+      </div>
+
+      <div class="comparison-bar" id="compBar">
+        <div class="comp-row">
+          <div class="comp-label"><span>Dein Betrieb</span><strong id="yourPct">–</strong></div>
+          <div class="comp-track"><div class="comp-fill you" id="yourFill" style="width:0%"></div></div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-label"><span>Top-Betriebe mit KI</span><strong>92%</strong></div>
+          <div class="comp-track"><div class="comp-fill avg" style="width:92%"></div></div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px;">Reaktionsgeschwindigkeit auf Kundenanfragen</p>
+      </div>
+
+      <div class="teaser-unlock">Schalte jetzt frei: <strong style="color:var(--text);">Welche 3 Aufgaben ein KI-Mitarbeiter sofort für dich übernehmen könnte</strong></div>
+      <div class="teaser-blur">
+        ✅ Aufgabe 1: Erstantwort auf Kundenanfragen (spart ~4h/Woche)...<br>
+        ✅ Aufgabe 2: Terminbuchung & Erinnerungen automatisieren...<br>
+        ✅ Aufgabe 3: Angebote & Nachfassen ohne deinen Aufwand...
+      </div>
+
+      <button class="btn btn-primary" onclick="showLead()" style="margin-top:8px;">
+        🔓 Meine Aufgaben-Liste freischalten
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 7: LEAD CAPTURE ============ -->
+  <div id="screen-lead" class="card fade-up hidden">
+    <div class="lead-heading">Gleich siehst du's! 👇</div>
+    <p class="lead-sub">Trag deine Nummer ein – Manu schickt dir deine persönliche Liste der Aufgaben, die ein KI-Mitarbeiter für deinen Betrieb sofort übernehmen könnte. <strong style="color:var(--text);">Kein Callcenter. Manu ruft persönlich an.</strong></p>
+
+    <div class="input-group">
+      <div class="input-wrap">
+        <label>Dein Name</label>
+        <input type="text" id="inputName" placeholder="Max Mustermann" autocomplete="name" />
+      </div>
+      <div class="input-wrap">
+        <label>Handynummer (am besten WhatsApp)</label>
+        <input type="tel" id="inputPhone" placeholder="+49 171 234 5678" autocomplete="tel" />
+      </div>
+    </div>
+
+    <div class="privacy-note">
+      Deine Daten werden nicht weitergegeben. Manu von DigitalPeak meldet sich persönlich bei dir – kein Callcenter, kein Spam.
+    </div>
+
+    <button class="btn btn-primary" id="btnSubmit" onclick="submitLead()">
+      Analyse jetzt anzeigen →
+    </button>
+  </div>
+
+  <!-- ============ SCREEN 8: ERGEBNIS (nach Lead) ============ -->
+  <div id="screen-result" class="card fade-up hidden">
+    <div class="result-header">
+      <div class="result-name-hi" id="resultHi">Hey Max 👋</div>
+      <div class="result-heading" id="resultHeading">Du verlierst aktuell bis zu <span style="color:var(--red);" id="resultLoss">X€</span> im Monat durch verpasste Anfragen.</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6;" id="resultSub"></p>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" id="metricAnfragen">–</div>
+        <div class="metric-label">Anfragen die wöchentlich unbeantwortet bleiben</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metricStunden">–</div>
+        <div class="metric-label">Stunden/Woche für Verwaltung & Rückrufe</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metricUmsatz">–</div>
+        <div class="metric-label">Monatliches Umsatzpotenzial liegt brach</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metricPotenzial">–</div>
+        <div class="metric-label">Davon mit KI-Mitarbeiter zurückholbar</div>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <div class="roadmap-title">🎯 Dein persönlicher 3-Schritte-Plan</div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-text">
+          <strong>Sofortreaktion einrichten (Woche 1)</strong>
+          <span>KI antwortet in unter 30 Sekunden auf jede Anfrage – du verlierst keinen Kunden mehr wegen zu langsamer Reaktion.</span>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-text">
+          <strong>Terminbuchung automatisieren (Woche 2)</strong>
+          <span>Kunden buchen sich selbst einen Termin – ohne dass du ans Telefon musst oder einen Mitarbeiter brauchst.</span>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-text">
+          <strong>Angebote & Follow-up automatisieren (Woche 3–4)</strong>
+          <span>Angebote werden automatisch nachgefasst. Kein Lead geht mehr verloren weil du vergessen hast zurückzurufen.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-box">
+      <p><strong style="color:var(--text);">Manu meldet sich persönlich bei dir.</strong><br>
+      Wir schauen gemeinsam in einem 20-minütigen Gespräch, welcher Schritt bei dir den größten sofortigen Effekt hat – kostenlos & unverbindlich.</p>
+      <button class="btn btn-cta" onclick="handleCTA()">
+        📞 Kostenloses Gespräch mit Manu
+      </button>
+    </div>
+
+    <p style="font-size:12px;color:var(--muted);text-align:center;">
+      ✅ Kein Verkaufsdruck · Konkrete Einblicke · 20 Min.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  // ─── DATA ───────────────────────────────────────────────
+  const questions = [
+    {
+      emoji: '📞',
+      text: 'Du bist auf der Baustelle und ein unbekannte Nummer ruft an. Was passiert meistens?',
+      hint: 'Das ist eine der häufigsten Stellen, wo Betriebe Kunden verlieren.',
+      options: [
+        { letter: 'A', emoji: '✅', text: 'Ich nehme immer ab – egal was.', score: 5 },
+        { letter: 'B', emoji: '🔄', text: 'Ich rufe meistens am gleichen Tag zurück.', score: 15 },
+        { letter: 'C', emoji: '😬', text: 'Ich rufe zurück, wenn ich Zeit finde – manchmal dauert das 1–2 Tage.', score: 30 },
+        { letter: 'D', emoji: '💸', text: 'Ehrlich gesagt gehen viele Anrufe einfach verloren.', score: 45 },
+      ]
+    },
+    {
+      emoji: '📋',
+      text: 'Wie viele Stunden pro Woche verbringst du mit Bürokram – Angebote, Rechnungen, Terminplanung?',
+      hint: 'Das sind typische Aufgaben, die ein KI-Mitarbeiter komplett übernehmen kann.',
+      options: [
+        { letter: 'A', emoji: '😎', text: 'Weniger als 2 Stunden – läuft bei mir.', score: 5 },
+        { letter: 'B', emoji: '🙂', text: '2–5 Stunden – ist okay.', score: 15 },
+        { letter: 'C', emoji: '😓', text: '5–10 Stunden – kostet mich viel Zeit.', score: 30 },
+        { letter: 'D', emoji: '🔥', text: 'Mehr als 10 Stunden – das ist mein größtes Problem.', score: 45 },
+      ]
+    },
+    {
+      emoji: '🌙',
+      text: 'Bearbeitest du Kundenanfragen auch abends oder am Wochenende?',
+      hint: 'Viele Inhaber opfern Freizeit, weil tagsüber keine Zeit bleibt.',
+      options: [
+        { letter: 'A', emoji: '🙅', text: 'Nein, ich trenne Arbeit und Freizeit klar.', score: 5 },
+        { letter: 'B', emoji: '🤷', text: 'Manchmal, wenn etwas dringend ist.', score: 20 },
+        { letter: 'C', emoji: '😔', text: 'Ja, regelmäßig – anders schaffe ich es nicht.', score: 35 },
+        { letter: 'D', emoji: '😩', text: 'Fast jeden Abend. Wochenende gibt es kaum noch.', score: 45 },
+      ]
+    },
+    {
+      emoji: '⏱️',
+      text: 'Wie lange wartet ein Neukunde bei dir im Schnitt auf ein Angebot?',
+      hint: 'Studien zeigen: Wer binnen 1 Stunde antwortet, gewinnt 7x mehr Aufträge.',
+      options: [
+        { letter: 'A', emoji: '⚡', text: 'Gleicher Tag – ich bin sehr schnell.', score: 5 },
+        { letter: 'B', emoji: '📅', text: '1–2 Tage.', score: 20 },
+        { letter: 'C', emoji: '🐢', text: '3–5 Tage, manchmal länger.', score: 35 },
+        { letter: 'D', emoji: '😅', text: 'Angebote schreiben ist bei mir der größte Engpass.', score: 45 },
+      ]
+    },
+    {
+      emoji: '💶',
+      text: 'Was ist ein typischer Auftrag bei dir durchschnittlich wert?',
+      hint: 'Das hilft uns, dein konkretes monatliches Einsparpotenzial zu berechnen.',
+      options: [
+        { letter: 'A', emoji: '💰', text: 'Unter 500€', score: 10 },
+        { letter: 'B', emoji: '💰💰', text: '500€ – 2.000€', score: 15 },
+        { letter: 'C', emoji: '💰💰💰', text: '2.000€ – 5.000€', score: 20 },
+        { letter: 'D', emoji: '🏆', text: 'Über 5.000€', score: 25 },
+      ]
+    }
+  ];
+
+  // ─── STATE ───────────────────────────────────────────────
+  let currentQ = 0;
+  let scores = [];
+  let selectedIdx = -1;
+  let userName = '';
+  let userPhone = '';
+
+  // ─── QUIZ FLOW ───────────────────────────────────────────
+  function show(id) {
+    ['screen-intro','screen-questions','screen-score','screen-lead','screen-result']
+      .forEach(s => document.getElementById(s).classList.add('hidden'));
+    const el = document.getElementById(id);
+    el.classList.remove('hidden');
+    el.classList.remove('fade-up');
+    void el.offsetWidth;
+    el.classList.add('fade-up');
+  }
+
+  function startQuiz() {
+    document.getElementById('progressWrap').classList.remove('hidden');
+    currentQ = 0; scores = [];
+    renderQuestion();
+    show('screen-questions');
+  }
+
+  function renderQuestion() {
+    selectedIdx = -1;
+    const q = questions[currentQ];
+    const pct = Math.round((currentQ / questions.length) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `Frage ${currentQ+1} von ${questions.length}`;
+    document.getElementById('progressPct').textContent = pct + '%';
+
+    const html = `
+      <div class="q-number">Frage ${currentQ+1} von ${questions.length} ${q.emoji}</div>
+      <div class="q-text">${q.text}</div>
+      ${q.hint ? `<div style="font-size:13px;color:var(--accent);background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.15);border-radius:10px;padding:9px 13px;margin-bottom:16px;">💡 ${q.hint}</div>` : ''}
+      <div class="options" id="options">
+        ${q.options.map((o,i) => `
+          <div class="option" onclick="selectOption(${i})" id="opt-${i}">
+            <div class="option-letter">${o.letter}</div>
+            <div class="option-emoji">${o.emoji}</div>
+            <div>${o.text}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="btn-next-wrap">
+        <button class="btn btn-primary" id="btnNext" onclick="nextQuestion()" disabled>
+          ${currentQ < questions.length - 1 ? 'Weiter →' : 'Ergebnis anzeigen ✨'}
+        </button>
+      </div>
+    `;
+    document.getElementById('screen-questions').innerHTML = html;
+  }
+
+  function selectOption(idx) {
+    selectedIdx = idx;
+    document.querySelectorAll('.option').forEach((el,i) => {
+      el.classList.toggle('selected', i === idx);
+    });
+    document.getElementById('btnNext').disabled = false;
+  }
+
+  function nextQuestion() {
+    if (selectedIdx < 0) return;
+    scores.push(questions[currentQ].options[selectedIdx].score);
+    currentQ++;
+    if (currentQ < questions.length) {
+      renderQuestion();
+    } else {
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('progressText').textContent = `Analyse läuft...`;
+      document.getElementById('progressPct').textContent = '100%';
+      setTimeout(showScore, 600);
+    }
+  }
+
+  // ─── SCORE LOGIC ─────────────────────────────────────────
+  function calcScore() {
+    const raw = scores.reduce((a,b) => a+b, 0);
+    const max = questions.reduce((a,q) => a + Math.max(...q.options.map(o=>o.score)), 0);
+    // Invert: higher raw = worse situation = lower score (out of 100)
+    const normalized = Math.round(100 - (raw / max) * 100);
+    return Math.max(10, Math.min(95, normalized));
+  }
+
+  function showScore() {
+    const score = calcScore();
+    const pct = score + '%';
+
+    // Ring
+    document.getElementById('scoreRing').style.setProperty('--pct', pct);
+
+    // Animate number
+    let n = 0;
+    const target = score;
+    const el = document.getElementById('scoreNum');
+    const timer = setInterval(() => {
+      n = Math.min(n + 3, target);
+      el.textContent = n;
+      if (n >= target) clearInterval(timer);
+    }, 20);
+
+    // Label & insight
+    const label = document.getElementById('scoreLabel');
+    const headline = document.getElementById('scoreHeadline');
+    const insightBox = document.getElementById('insightBox');
+    const insightTitle = document.getElementById('insightTitle');
+    const insightText = document.getElementById('insightText');
+    const yourFill = document.getElementById('yourFill');
+    const yourPct = document.getElementById('yourPct');
+
+    // Reaktionsgeschwindigkeit based on Q1 answer (scores[0])
+    let reaktionPct;
+    if (scores[0] === 5) reaktionPct = 85;
+    else if (scores[0] === 15) reaktionPct = 60;
+    else if (scores[0] === 30) reaktionPct = 35;
+    else reaktionPct = 15;
+
+    yourPct.textContent = reaktionPct + '%';
+    setTimeout(() => { yourFill.style.width = reaktionPct + '%'; }, 400);
+
+    if (score >= 65) {
+      label.className = 'score-label high';
+      label.textContent = '✅ Gut aufgestellt';
+      headline.textContent = 'Du machst schon vieles richtig – aber es gibt klares Optimierungspotenzial.';
+      insightBox.className = 'insight-box good';
+      insightTitle.textContent = '💡 Deine größte Chance';
+      insightText.textContent = 'Dein Betrieb ist gut organisiert. Mit gezielter KI-Unterstützung kannst du deine Kapazität verdoppeln, ohne mehr Personal einzustellen.';
+    } else if (score >= 40) {
+      label.className = 'score-label mid';
+      label.textContent = '⚠️ Ausbaufähig';
+      headline.textContent = 'Du verlierst wahrscheinlich 3–5 Anfragen pro Woche – ohne es zu merken.';
+      insightBox.className = 'insight-box';
+      insightTitle.textContent = '⚠️ Dein größtes Problem';
+      insightText.textContent = 'Langsame Reaktionszeit kostet dich Aufträge. Kunden, die keine Antwort bekommen, rufen einfach beim nächsten Betrieb an – egal wie gut du bist.';
+    } else {
+      label.className = 'score-label low';
+      label.textContent = '🚨 Akuter Handlungsbedarf';
+      headline.textContent = 'Dein Betrieb verliert monatlich vermutlich 2.000–5.000€ durch verpasste Anfragen.';
+      insightBox.className = 'insight-box';
+      insightTitle.textContent = '🚨 Kritisch: Das kostet dich Geld';
+      insightText.textContent = 'Du verlierst Kunden nicht wegen schlechter Arbeit – sondern weil du zu beschäftigt bist um schnell zu reagieren. Jede unbeantworte Anfrage ist bares Geld, das zur Konkurrenz geht.';
+    }
+
+    show('screen-score');
+    window._quizScore = score;
+  }
+
+  // ─── LEAD & RESULT ───────────────────────────────────────
+  function showLead() {
+    document.getElementById('progressWrap').classList.add('hidden');
+    show('screen-lead');
+  }
+
+  function submitLead() {
+    const name = document.getElementById('inputName').value.trim();
+    const phone = document.getElementById('inputPhone').value.trim();
+    if (!name || !phone) {
+      alert('Bitte gib deinen Namen und deine Handynummer ein.');
+      return;
+    }
+    userName = name.split(' ')[0];
+    userPhone = phone;
+
+    // Here you'd POST to your backend/Zapier/Make webhook
+    // fetch('YOUR_WEBHOOK_URL', { method:'POST', body: JSON.stringify({name, phone, score: window._quizScore, answers: scores}) });
+
+    showResult();
+  }
+
+  function showResult() {
+    const score = window._quizScore || 50;
+
+    // Calculate metrics based on scores
+    const auftragsWert = [250, 1250, 3500, 7500][scores[4] !== undefined ? questions[4].options.findIndex((_,i) => i === scores.indexOf(scores[4])) : 1] || 1250;
+    const missedPerWeek = scores[0] === 45 ? 5 : scores[0] === 30 ? 3 : scores[0] === 15 ? 1 : 0;
+    const stundenPerWeek = Math.round((100 - score) / 10);
+    const monthlyLoss = missedPerWeek * 4 * Math.round(auftragsWert * 0.3);
+    const recoverable = Math.round(monthlyLoss * 0.7);
+
+    document.getElementById('resultHi').textContent = `Hey ${userName} 👋`;
+
+    let lossText, subText;
+    if (score < 40) {
+      lossText = monthlyLoss > 0 ? `${monthlyLoss.toLocaleString('de-DE')}€` : '2.000–5.000€';
+      subText = 'Das ist keine Schätzung – das ist Mathematik. Jede verpasste Anfrage hat einen Wert. Zusammen schauen wir, wie wir dieses Geld zurückholen.';
+    } else if (score < 65) {
+      lossText = '800–2.500€';
+      subText = 'Mit einfachen KI-Lösungen kannst du deine Reaktionszeit auf unter 30 Sekunden senken – und damit deutlich mehr Aufträge abschließen.';
+    } else {
+      lossText = '500–1.500€';
+      subText = 'Dein Betrieb läuft gut – mit dem richtigen KI-Setup kannst du die Effizienz nochmal deutlich steigern ohne mehr Aufwand.';
+    }
+
+    document.getElementById('resultHeading').innerHTML = `Du verlierst aktuell bis zu <span style="color:var(--red);">${lossText}</span> im Monat durch verpasste Anfragen.`;
+    document.getElementById('resultSub').textContent = subText;
+    document.getElementById('metricAnfragen').textContent = missedPerWeek > 0 ? `~${missedPerWeek}/Woche` : '1–2/Woche';
+    document.getElementById('metricStunden').textContent = `~${stundenPerWeek}h/Woche`;
+    document.getElementById('metricUmsatz').textContent = lossText;
+    document.getElementById('metricPotenzial').textContent = score < 65 ? '70–85%' : '40–60%';
+
+    show('screen-result');
+  }
+
+  function handleCTA() {
+    // Replace with your Calendly link or just show a WhatsApp link
+    const msg = encodeURIComponent(`Hallo Manu! Ich habe gerade den KI-Check auf deiner Website gemacht und würde gerne über mein Ergebnis sprechen. Mein Name ist ${userName}.`);
+    window.open(`https://wa.me/49DEINEWANUMMER?text=${msg}`, '_blank');
+    // Or: window.open('https://calendly.com/deinlink', '_blank');
+  }
+</script>
+
+</body>
+</html>

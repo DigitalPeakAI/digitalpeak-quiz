@@ -891,7 +891,7 @@
 </div>
 
 <script>
-const N8N_WEBHOOK_URL = 'https://n8n.srv1451390.hstgr.cloud/webhook/digitalpeak-quiz-submit';
+const N8N_WEBHOOK_URL = '/api/submit';
 const WHATSAPP_NUMBER = '491631228850';
 
 const questions = [
@@ -1088,7 +1088,7 @@ async function submitLead(){
     quelle:'quiz-audit.digitalpeak.de',timestamp:new Date().toISOString()};
   try{
     if(N8N_WEBHOOK_URL&&!N8N_WEBHOOK_URL.includes('DEIN')){
-      await fetch(N8N_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),mode:'no-cors'});
+      await fetch(N8N_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     }
   }catch(e){console.warn('Webhook:',e);}
   await new Promise(r=>setTimeout(r,1400));

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KI-Check — DigitalPeak</title>
+  <meta name="description" content="5 Fragen. 2 Minuten. Finde heraus wie viel Umsatz du durch zu langsame Antworten verlierst." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #111111;
+      --bg2:     #191919;
+      --bg3:     #222222;
+      --border:  rgba(255,255,255,0.08);
+      --cyan:    #00CFFF;
+      --white:   #ffffff;
+      --gray1:   #888888;
+      --gray2:   #555555;
+      --red:     #ef4444;
+      --green:   #22c55e;
+      --text:    #e8e8e8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 24px 100px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 580px;
+    }
+
+    /* ── BRAND ── */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+    .dp-logo { display: flex; align-items: baseline; line-height: 1; }
+    .dp-d    { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.03em; }
+    .dp-p    { font-size: 17px; font-weight: 800; color: #00CFFF; letter-spacing: -0.03em; }
+    .brand-div { width: 1px; height: 14px; background: var(--border); }
+    .brand-tag { font-size: 12px; color: var(--gray1); font-weight: 400; letter-spacing: 0.01em; }
+
+    /* ── STEP INDICATOR ── */
+    .steps {
+      display: flex;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+    .step-dot {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      color: var(--gray2);
+      transition: all 0.25s;
+      flex-shrink: 0;
+    }
+    .step-dot.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0,207,255,0.06);
+    }
+    .step-dot.done {
+      border-color: rgba(34,197,94,0.4);
+      background: rgba(34,197,94,0.08);
+      color: var(--green);
+      font-size: 10px;
+    }
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      min-width: 16px;
+      transition: background 0.3s;
+    }
+    .step-line.done { background: rgba(34,197,94,0.2); }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 44px 40px;
+    }
+    @media (max-width: 520px) { .card { padding: 32px 24px; } }
+
+    /* ── SECTION TAG ── */
+    .section-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray1);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .tag-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--cyan);
+      flex-shrink: 0;
+    }
+    .tag-dot.g { background: var(--green); }
+    .tag-dot.r { background: var(--red); }
+
+    /* ── DUAL HEADLINE ── */
+    .h-primary {
+      font-size: clamp(32px, 6.5vw, 50px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: var(--white);
+      display: block;
+    }
+    .h-secondary {
+      font-size: clamp(32px, 6.5vw, 50px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: var(--gray2);
+      display: block;
+      margin-bottom: 24px;
+    }
+    .h-secondary .accent { color: var(--cyan); }
+
+    /* ── BODY ── */
+    .body-text {
+      font-size: 15px;
+      color: var(--gray1);
+      line-height: 1.7;
+      font-weight: 400;
+      margin-bottom: 36px;
+    }
+    .body-text strong { color: var(--text); font-weight: 600; }
+
+    /* ── STAT TILES ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+    .stat-tile {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 18px;
+    }
+    .stat-val {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-val.r { color: var(--red); }
+    .stat-val.c { color: var(--cyan); }
+    .stat-desc {
+      font-size: 13px;
+      color: var(--gray1);
+      line-height: 1.45;
+      font-weight: 400;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.18s;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+    .btn-white {
+      background: var(--white);
+      color: #000;
+    }
+    .btn-white:hover {
+      background: #ebebeb;
+      transform: translateY(-1px);
+    }
+    .btn-white:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-cyan {
+      background: var(--cyan);
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 0 0 0 rgba(0,207,255,0);
+      transition: all 0.2s, box-shadow 0.5s;
+    }
+    .btn-cyan:hover {
+      background: #00b8e0;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(0,207,255,0.22);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--gray1);
+      border: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.18);
+      color: var(--white);
+    }
+    .btn-next { margin-top: 28px; }
+
+    /* ── QUESTION ── */
+    .q-meta {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .q-title {
+      font-size: clamp(18px, 4vw, 24px);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .q-hint {
+      font-size: 13px;
+      color: var(--gray2);
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+
+    /* ── OPTIONS ── */
+    .options { display: flex; flex-direction: column; gap: 6px; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--gray1);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .option:hover {
+      border-color: rgba(255,255,255,0.16);
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+    }
+    .option.selected {
+      border-color: var(--cyan);
+      color: var(--white);
+      background: rgba(0,207,255,0.06);
+    }
+    .opt-icon { font-size: 18px; flex-shrink: 0; line-height: 1; }
+    .opt-label { flex: 1; }
+    .opt-check {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--cyan);
+      flex-shrink: 0;
+      margin-left: auto;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transform: scale(0.4);
+      transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .opt-check svg { width: 10px; height: 10px; }
+    .option.selected .opt-check { opacity: 1; transform: scale(1); }
+
+    /* ── SCORE RING ── */
+    .score-wrap { text-align: center; }
+    .ring-container {
+      position: relative;
+      width: 148px; height: 148px;
+      margin: 0 auto 20px;
+    }
+    .ring-container svg {
+      width: 148px; height: 148px;
+      transform: rotate(-90deg);
+    }
+    .ring-track { fill: none; stroke: var(--bg3); stroke-width: 8; }
+    .ring-fill  {
+      fill: none;
+      stroke: var(--cyan);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: 408;
+      transition: stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1);
+    }
+    .ring-inner {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .ring-num {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      color: var(--white);
+      line-height: 1;
+    }
+    .ring-label { font-size: 12px; color: var(--gray2); margin-top: 2px; }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .pill-low  { background: rgba(239,68,68,0.08);  color: var(--red);   border: 1px solid rgba(239,68,68,0.2); }
+    .pill-mid  { background: rgba(251,146,60,0.08); color: #fb923c;      border: 1px solid rgba(251,146,60,0.2); }
+    .pill-high { background: rgba(34,197,94,0.08);  color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+
+    .score-desc {
+      font-size: 15px;
+      color: var(--gray1);
+      line-height: 1.65;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    /* ── INSIGHT BLOCK ── */
+    .insight {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      background: var(--bg3);
+    }
+    .insight.warn  { border-color: rgba(239,68,68,0.18);  background: rgba(239,68,68,0.04); }
+    .insight.good  { border-color: rgba(34,197,94,0.18);  background: rgba(34,197,94,0.04); }
+    .insight-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .insight.warn  .insight-label { color: var(--red); }
+    .insight.good  .insight-label { color: var(--green); }
+    .insight p { font-size: 14px; color: var(--gray1); line-height: 1.6; }
+
+    /* ── COMPARISON ── */
+    .comparison { margin: 20px 0 4px; }
+    .comp-row   { margin-bottom: 16px; }
+    .comp-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gray2);
+      margin-bottom: 8px;
+    }
+    .comp-labels strong { color: var(--text); font-weight: 600; }
+    .comp-bar   { height: 4px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+    .comp-fill  { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+    .comp-fill.you { background: var(--red); }
+    .comp-fill.ai  { background: var(--cyan); }
+    .comp-note { font-size: 11px; color: var(--gray2); margin-top: 8px; }
+
+    /* ── TEASER ── */
+    .teaser { position: relative; margin: 20px 0; }
+    .teaser-content {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+      font-size: 13px;
+      color: var(--gray1);
+      line-height: 2.1;
+    }
+    .teaser-badge {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .teaser-pill {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 7px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── LEAD FORM ── */
+    .lead-title {
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .lead-title-sub {
+      font-size: clamp(20px, 4.5vw, 28px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--gray2);
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    .lead-body {
+      font-size: 14px;
+      color: var(--gray1);
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+    .lead-body strong { color: var(--text); font-weight: 600; }
+
+    .form-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .form-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+    .form-field input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 13px 16px;
+      font-size: 15px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-field input::placeholder { color: var(--gray2); }
+    .form-field input:focus { border-color: rgba(255,255,255,0.22); }
+
+    .privacy {
+      font-size: 12px;
+      color: var(--gray2);
+      line-height: 1.55;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* ── SPINNER ── */
+    .spinner-screen { text-align: center; padding: 64px 0; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 18px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner-text { font-size: 14px; color: var(--gray2); font-weight: 400; }
+
+    /* ── RESULT ── */
+    .result-greeting { font-size: 13px; color: var(--gray1); margin-bottom: 10px; }
+    .result-title {
+      font-size: clamp(24px, 5.5vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .result-title-sub {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--gray2);
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .result-body {
+      font-size: 14px;
+      color: var(--gray1);
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+
+    /* ── BENTO METRICS ── */
+    .bento {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .bento-tile {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 16px;
+    }
+    .bento-val {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 7px;
+    }
+    .bento-val.r { color: var(--red); }
+    .bento-val.g { color: var(--green); }
+    .bento-val.c { color: var(--cyan); }
+    .bento-val.w { color: var(--white); }
+    .bento-label { font-size: 12px; color: var(--gray2); line-height: 1.4; }
+
+    /* ── ROADMAP ── */
+    .roadmap {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .roadmap-heading {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray2);
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 20px;
+    }
+    .roadmap-item { display: flex; gap: 14px; margin-bottom: 16px; }
+    .roadmap-item:last-child { margin-bottom: 0; }
+    .roadmap-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      color: var(--gray2);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .roadmap-title { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+    .roadmap-desc  { font-size: 13px; color: var(--gray2); line-height: 1.5; }
+
+    /* ── CTA CARD ── */
+    .cta-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 28px 24px;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,207,255,0.35), transparent);
+    }
+    .cta-photo {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      margin: 0 auto 14px; display: block;
+    }
+    .cta-title-big {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .cta-body {
+      font-size: 13px;
+      color: var(--gray1);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .result-note {
+      font-size: 12px;
+      color: var(--gray2);
+      text-align: center;
+    }
+
+    /* ── FLOAT BAR ── */
+    .float-bar {
+      position: fixed;
+      bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(25,25,25,0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 99px;
+      padding: 6px 6px 6px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 999;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+      white-space: nowrap;
+    }
+    .float-text { font-size: 13px; color: var(--gray1); font-weight: 500; }
+    .float-btn {
+      background: var(--white);
+      color: #000;
+      border: none;
+      border-radius: 99px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.15s;
+    }
+    .float-btn:hover { background: #ebebeb; }
+
+    /* ── UTILS ── */
+    .hidden { display: none !important; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .appear { animation: fadeSlide 0.3s ease forwards; }
+    @media (max-width: 400px) {
+      .bento { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- BRAND -->
+  <div class="brand">
+    <div class="dp-logo">
+      <span class="dp-d">Digital</span><span class="dp-p">Peak</span>
+    </div>
+    <div class="brand-div"></div>
+    <span class="brand-tag">KI-Agentur · Köln</span>
+  </div>
+
+  <!-- STEP DOTS -->
+  <div class="steps hidden" id="stepsWrap">
+    <div class="step-dot" id="dot-1">1</div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step-dot" id="dot-2">2</div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step-dot" id="dot-3">3</div>
+    <div class="step-line" id="line-3"></div>
+    <div class="step-dot" id="dot-4">4</div>
+    <div class="step-line" id="line-4"></div>
+    <div class="step-dot" id="dot-5">5</div>
+  </div>
+
+  <!-- SCREEN 0: INTRO -->
+  <div id="screen-intro" class="card appear">
+    <div class="section-tag"><span class="tag-dot"></span>KI-Check 2026 · Kostenlos</div>
+
+    <span class="h-primary">Wie viele Aufträge verlierst du</span>
+    <span class="h-secondary">durch <span class="accent">zu langsame Antworten?</span></span>
+
+    <p class="body-text">
+      Jeder Interessent der keine schnelle Antwort bekommt, ruft als Nächstes beim Konkurrenten an.
+      <strong>5 Fragen. 2 Minuten.</strong> Ich zeige dir konkret wie viel Umsatz du jeden Monat verlierst.
+    </p>
+
+    <div class="stat-grid">
+      <div class="stat-tile">
+        <div class="stat-val r">80%</div>
+        <div class="stat-desc">der Leads gehen verloren wenn nicht in 5 Min. geantwortet wird</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-val c">25.000 €</div>
+        <div class="stat-desc">ist ein Solar-Auftrag wert — jeder verpasste schmerzt direkt</div>
+      </div>
+    </div>
+
+    <button class="btn btn-white" onclick="startQuiz()">Jetzt herausfinden →</button>
+    <p style="font-size:12px;color:var(--gray2);text-align:center;margin-top:12px;">Keine Kreditkarte · Kein Fachwissen · Manu antwortet persönlich</p>
+  </div>
+
+  <!-- SCREEN 1–5: FRAGEN -->
+  <div id="screen-questions" class="card appear hidden"></div>
+
+  <!-- SCREEN 6: SCORE -->
+  <div id="screen-score" class="card appear hidden">
+    <div class="section-tag"><span class="tag-dot"></span>Dein Ergebnis</div>
+
+    <div class="score-wrap">
+      <div class="ring-container">
+        <svg viewBox="0 0 148 148">
+          <circle class="ring-track" cx="74" cy="74" r="65"/>
+          <circle class="ring-fill" id="scoreRingFill" cx="74" cy="74" r="65"/>
+        </svg>
+        <div class="ring-inner">
+          <div class="ring-num" id="scoreNum">0</div>
+          <div class="ring-label">/ 100</div>
+        </div>
+      </div>
+      <div class="score-pill" id="scoreLabel">–</div>
+    </div>
+
+    <p class="score-desc" id="scoreHeadline"></p>
+
+    <div class="insight" id="insightCard">
+      <div class="insight-label" id="insightTitle">–</div>
+      <p id="insightText"></p>
+    </div>
+
+    <div class="comparison">
+      <div class="comp-row">
+        <div class="comp-labels"><span>Dein Betrieb heute</span><strong id="yourPct">–</strong></div>
+        <div class="comp-bar"><div class="comp-fill you" id="yourFill" style="width:0%"></div></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-labels"><span>Betriebe mit KI-System</span><strong>94%</strong></div>
+        <div class="comp-bar"><div class="comp-fill ai" style="width:94%"></div></div>
+      </div>
+      <p class="comp-note">Reaktionsgeschwindigkeit auf neue Kundenanfragen</p>
+    </div>
+
+    <div class="teaser">
+      <div class="teaser-content">
+        📊 Monatlicher Umsatzverlust durch verpasste Anfragen: X.XXX €<br>
+        ⚡ Schritt 1: Sofortmaßnahme die in 5 Tagen läuft...<br>
+        🎯 Schritt 2: Wie du in Woche 2 nie mehr einen Auftrag verlierst...
+      </div>
+      <div class="teaser-badge">
+        <div class="teaser-pill">🔒 Freischalten mit deiner Nummer</div>
+      </div>
+    </div>
+
+    <button class="btn btn-white" onclick="showLead()" style="margin-top:8px;">Aktionsplan + konkrete Zahlen freischalten →</button>
+  </div>
+
+  <!-- SCREEN 7: LEAD -->
+  <div id="screen-lead" class="card appear hidden">
+    <div class="section-tag"><span class="tag-dot g"></span>Fast geschafft</div>
+
+    <div class="lead-title">Wer soll die</div>
+    <div class="lead-title-sub">Analyse bekommen?</div>
+
+    <p class="lead-body">
+      Trag deine Nummer ein — Manu schaut sich dein Ergebnis persönlich an.
+      <strong>Kein Callcenter. Manu ruft persönlich an.</strong>
+    </p>
+
+    <div class="form-stack">
+      <div class="form-field">
+        <label>Dein Name</label>
+        <input type="text" id="inputName" placeholder="Max Mustermann" autocomplete="name" />
+      </div>
+      <div class="form-field">
+        <label>Betrieb / Firma</label>
+        <input type="text" id="inputFirma" placeholder="z.B. Müller Solar GmbH" />
+      </div>
+      <div class="form-field">
+        <label>Handynummer (WhatsApp)</label>
+        <input type="tel" id="inputPhone" placeholder="+49 171 234 5678" autocomplete="tel" />
+      </div>
+    </div>
+
+    <div class="privacy">
+      <span>🔒</span>
+      <span>Deine Daten werden nicht weitergegeben. Manu meldet sich persönlich — kein Spam, kein Callcenter.</span>
+    </div>
+
+    <button class="btn btn-white" id="btnSubmit" onclick="submitLead()">Analyse anzeigen →</button>
+  </div>
+
+  <!-- SCREEN 7b: SENDING -->
+  <div id="screen-sending" class="card appear hidden">
+    <div class="spinner-screen">
+      <div class="spinner"></div>
+      <p class="spinner-text">Deine Analyse wird erstellt…</p>
+    </div>
+  </div>
+
+  <!-- SCREEN 8: RESULT -->
+  <div id="screen-result" class="card appear hidden">
+    <div class="section-tag"><span class="tag-dot r"></span>Deine Auswertung</div>
+
+    <p class="result-greeting" id="resultHi">Hey Max 👋</p>
+    <div class="result-title" id="resultTitleLine1">Du verlierst aktuell</div>
+    <div class="result-title-sub" id="resultTitleLine2">bis zu <span id="metricUmsatz" style="color:var(--red)">–</span> im Monat.</div>
+    <p class="result-body" id="resultSub"></p>
+
+    <div class="bento">
+      <div class="bento-tile">
+        <div class="bento-val r" id="bentoLoss">–</div>
+        <div class="bento-label">Monatlicher Umsatzverlust</div>
+      </div>
+      <div class="bento-tile">
+        <div class="bento-val g" id="metricPotenzial">–</div>
+        <div class="bento-label">Davon mit KI zurückholbar</div>
+      </div>
+      <div class="bento-tile">
+        <div class="bento-val c" id="metricAnfragen">–</div>
+        <div class="bento-label">Anfragen wöchentlich verpasst</div>
+      </div>
+      <div class="bento-tile">
+        <div class="bento-val w" id="metricStunden">–</div>
+        <div class="bento-label">Stunden/Woche für Admin</div>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <div class="roadmap-heading"><span class="tag-dot"></span>Dein 3-Schritte-Plan</div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">1</div>
+        <div>
+          <div class="roadmap-title">Sofortreaktion einrichten (Woche 1)</div>
+          <div class="roadmap-desc">Jede Anfrage — WhatsApp, Website, E-Mail — automatisch in unter 2 Min. beantwortet.</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">2</div>
+        <div>
+          <div class="roadmap-title">Terminbuchung automatisieren (Woche 2)</div>
+          <div class="roadmap-desc">Interessenten buchen direkt aus der Antwort heraus — ohne Telefon.</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-num">3</div>
+        <div>
+          <div class="roadmap-title">Follow-up &amp; Nachfass (Woche 3–4)</div>
+          <div class="roadmap-desc">Kein Angebot geht mehr verloren — das System fragt automatisch nach.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-card">
+      <img class="cta-photo" src="https://digitalpeak.de/wp-content/uploads/2026/04/ManuMalten-300x300.jpg" alt="Manu" onerror="this.style.display='none'" />
+      <div class="cta-title-big">Lass uns 20 Minuten sprechen.</div>
+      <p class="cta-body">Manu meldet sich persönlich. Kostenloses Gespräch — welcher Schritt hat bei dir den größten Sofort-Effekt?</p>
+      <button class="btn btn-cyan" onclick="handleCTA()">📲 Gespräch buchen</button>
+    </div>
+    <p class="result-note">✓ Kein Verkaufsdruck &nbsp;·&nbsp; ✓ Konkrete Einblicke &nbsp;·&nbsp; ✓ 20 Minuten</p>
+  </div>
+
+</div>
+
+<!-- FLOATING BAR -->
+<div class="float-bar hidden" id="floatBar">
+  <span class="float-text">Mehr Aufträge, weniger Aufwand.</span>
+  <button class="float-btn" onclick="handleCTA()">Gespräch buchen →</button>
+</div>
+
+<script>
+const N8N_WEBHOOK_URL = 'https://n8n.srv1451390.hstgr.cloud/webhook/digitalpeak-quiz-submit';
+const WHATSAPP_NUMBER = '491631228850';
+
+const questions = [
+  {
+    emoji:'🏗️', text:'Was beschreibt deinen Betrieb am besten?',
+    hint:'Damit berechnen wir deinen konkreten Umsatzverlust pro Auftrag.',
+    options:[
+      {emoji:'☀️',text:'Solar- & Photovoltaik-Installation',              score:20,branche:'Solar/PV',          auftragsWert:22000},
+      {emoji:'🔥',text:'Wärmepumpe & Heizungstechnik',                    score:20,branche:'Wärmepumpe/Heizung',auftragsWert:18000},
+      {emoji:'⚡',text:'Elektroinstallation',                             score:15,branche:'Elektro',            auftragsWert:8000},
+      {emoji:'🔧',text:'Sanitär, Maler, Schreiner oder anderes Handwerk', score:10,branche:'Handwerk allg.',     auftragsWert:6000},
+    ]
+  },
+  {
+    emoji:'📞', text:'Du bist auf der Baustelle und eine unbekannte Nummer ruft an. Was passiert?',
+    hint:'Das ist die häufigste Stelle, an der Betriebe Aufträge verlieren.',
+    options:[
+      {emoji:'✅',text:'Ich nehme immer ab — egal was.',                                      score:5},
+      {emoji:'🔄',text:'Ich rufe meistens am gleichen Tag zurück.',                           score:15},
+      {emoji:'😬',text:'Ich rufe zurück wenn ich Zeit finde — manchmal 1–2 Tage.',            score:35},
+      {emoji:'💸',text:'Ehrlich gesagt gehen viele Anrufe einfach verloren.',                 score:50},
+    ]
+  },
+  {
+    emoji:'⏱️', text:'Wie lange wartet ein Interessent im Schnitt auf eine erste Antwort?',
+    hint:'Wer nicht in 5 Minuten antwortet, verliert 80% der Interessenten.',
+    options:[
+      {emoji:'⚡',text:'Gleicher Tag — ich bin sehr schnell.',        score:5},
+      {emoji:'📅',text:'1–2 Tage.',                                  score:20},
+      {emoji:'🐢',text:'3–5 Tage, manchmal auch länger.',             score:40},
+      {emoji:'😅',text:'Angebote schreiben ist mein größter Engpass.',score:50},
+    ]
+  },
+  {
+    emoji:'🌙', text:'Bearbeitest du Kundenanfragen auch abends oder am Wochenende?',
+    hint:'Das zeigt wie viel Freizeit durch Admin-Aufwand verloren geht.',
+    options:[
+      {emoji:'🙅',text:'Nein — Arbeit und Freizeit trenne ich klar.',     score:5},
+      {emoji:'🤷',text:'Manchmal, wenn etwas dringend ist.',              score:20},
+      {emoji:'😔',text:'Ja, regelmäßig — anders schaffe ich es nicht.',   score:35},
+      {emoji:'😩',text:'Fast jeden Abend. Wochenende gibt es kaum noch.', score:45},
+    ]
+  },
+  {
+    emoji:'🎯', text:'Was kostet dich aktuell am meisten Energie und Zeit?',
+    hint:'Das ist der Punkt, an dem ein KI-System den größten Sofort-Effekt hat.',
+    options:[
+      {emoji:'📵',text:'Verpasste Anrufe & Anfragen die untergehen.',            score:45},
+      {emoji:'📝',text:'Angebote schreiben & Nachfassen — dauert ewig.',         score:40},
+      {emoji:'📆',text:'Terminplanung & Doppelbuchungen.',                       score:30},
+      {emoji:'🔁',text:'Bestandskunden reaktivieren & Folgeaufträge generieren.',score:25},
+    ]
+  }
+];
+
+let currentQ=0,scores=[],answers=[],selectedIdx=-1;
+let userName='',userPhone='',userFirma='',auftragsWert=10000,branche='';
+
+const SCREENS=['screen-intro','screen-questions','screen-score','screen-lead','screen-sending','screen-result'];
+
+function show(id){
+  SCREENS.forEach(s=>document.getElementById(s).classList.add('hidden'));
+  const el=document.getElementById(id);
+  el.classList.remove('hidden','appear');
+  void el.offsetWidth;
+  el.classList.add('appear');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateSteps(){
+  for(let i=1;i<=5;i++){
+    const d=document.getElementById('dot-'+i);
+    const l=document.getElementById('line-'+i);
+    if(i<currentQ+1){d.className='step-dot done';d.textContent='✓';}
+    else if(i===currentQ+1){d.className='step-dot active';d.textContent=i;}
+    else{d.className='step-dot';d.textContent=i;}
+    if(l)l.className=i<=currentQ?'step-line done':'step-line';
+  }
+}
+
+function startQuiz(){
+  document.getElementById('stepsWrap').classList.remove('hidden');
+  currentQ=0;scores=[];answers=[];
+  renderQuestion();show('screen-questions');
+}
+
+function renderQuestion(){
+  selectedIdx=-1;
+  const q=questions[currentQ];
+  updateSteps();
+  document.getElementById('screen-questions').innerHTML=`
+    <div class="q-meta">
+      <span style="width:5px;height:5px;border-radius:50%;background:var(--cyan);display:inline-block;flex-shrink:0"></span>
+      Frage ${currentQ+1} von ${questions.length}
+    </div>
+    <div class="q-title">${q.text}</div>
+    ${q.hint?`<p class="q-hint">${q.hint}</p>`:''}
+    <div class="options">
+      ${q.options.map((o,i)=>`
+        <div class="option" onclick="selectOption(${i})" id="opt-${i}">
+          <span class="opt-icon">${o.emoji}</span>
+          <span class="opt-label">${o.text}</span>
+          <span class="opt-check">
+            <svg viewBox="0 0 10 10" fill="none">
+              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>`).join('')}
+    </div>
+    <button class="btn btn-white btn-next" id="btnNext" onclick="nextQuestion()" disabled>
+      ${currentQ<questions.length-1?'Weiter →':'Ergebnis anzeigen →'}
+    </button>`;
+}
+
+function selectOption(idx){
+  selectedIdx=idx;
+  document.querySelectorAll('.option').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  document.getElementById('btnNext').disabled=false;
+  if(currentQ===0){auftragsWert=questions[0].options[idx].auftragsWert;branche=questions[0].options[idx].branche;}
+}
+
+function nextQuestion(){
+  if(selectedIdx<0)return;
+  scores.push(questions[currentQ].options[selectedIdx].score);
+  answers.push(questions[currentQ].options[selectedIdx].text);
+  currentQ++;
+  if(currentQ<questions.length){renderQuestion();show('screen-questions');}
+  else{
+    for(let i=1;i<=5;i++){
+      const d=document.getElementById('dot-'+i);if(d){d.className='step-dot done';d.textContent='✓';}
+      const l=document.getElementById('line-'+i);if(l)l.className='step-line done';
+    }
+    setTimeout(showScore,400);
+  }
+}
+
+function calcScore(){
+  const raw=scores.reduce((a,b)=>a+b,0);
+  const max=questions.reduce((a,q)=>a+Math.max(...q.options.map(o=>o.score)),0);
+  return Math.max(10,Math.min(92,Math.round(100-(raw/max)*100)));
+}
+
+function showScore(){
+  const score=calcScore();
+  window._quizScore=score;
+  const circ=2*Math.PI*65;
+  const fill=document.getElementById('scoreRingFill');
+  fill.style.strokeDasharray=circ;
+  fill.style.strokeDashoffset=circ;
+  setTimeout(()=>{fill.style.strokeDashoffset=circ*(1-score/100);},250);
+  let n=0;const el=document.getElementById('scoreNum');
+  const t=setInterval(()=>{n=Math.min(n+2,score);el.textContent=n;if(n>=score)clearInterval(t);},16);
+  const rmap={5:88,15:62,35:32,50:12};
+  const rPct=rmap[scores[1]]||30;
+  document.getElementById('yourPct').textContent=rPct+'%';
+  setTimeout(()=>{document.getElementById('yourFill').style.width=rPct+'%';},400);
+  const lbl=document.getElementById('scoreLabel');
+  const hl=document.getElementById('scoreHeadline');
+  const ic=document.getElementById('insightCard');
+  const it=document.getElementById('insightTitle');
+  const itxt=document.getElementById('insightText');
+  if(score>=65){
+    lbl.className='score-pill pill-high';lbl.textContent='✓ Gut aufgestellt';
+    hl.textContent='Du machst schon vieles richtig — mit gezieltem KI-Einsatz kannst du aber noch deutlich mehr rausholen.';
+    ic.className='insight good';it.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block"></span>DEINE GRÖSSTE CHANCE';
+    itxt.textContent='Dein Betrieb ist gut organisiert. Mit dem richtigen KI-System kannst du deine Kapazität deutlich steigern — ohne mehr Personal.';
+  }else if(score>=40){
+    lbl.className='score-pill pill-mid';lbl.textContent='⚠ Handlungsbedarf';
+    hl.textContent='Du verlierst wahrscheinlich 2–4 Anfragen pro Woche — ohne es genau zu wissen.';
+    ic.className='insight warn';it.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:var(--red);display:inline-block"></span>DAS KOSTET DICH GELD';
+    itxt.textContent='Kunden die keine schnelle Antwort bekommen, rufen beim nächsten Betrieb an. Reaktionszeit entscheidet — nicht Qualität.';
+  }else{
+    lbl.className='score-pill pill-low';lbl.textContent='🚨 Akuter Handlungsbedarf';
+    hl.textContent='Dein Betrieb verliert jeden Monat mehrere tausend Euro — durch verpasste Anfragen, nicht durch schlechte Arbeit.';
+    ic.className='insight warn';it.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:var(--red);display:inline-block"></span>DEIN PROBLEM';
+    itxt.textContent='Du verlierst Kunden nicht wegen Qualität — sondern weil du zu beschäftigt bist zum schnellen Antworten. Jede unbeantwortete Anfrage geht zur Konkurrenz.';
+  }
+  document.getElementById('stepsWrap').classList.add('hidden');
+  show('screen-score');
+}
+
+function showLead(){show('screen-lead');}
+
+async function submitLead(){
+  const name=document.getElementById('inputName').value.trim();
+  const firma=document.getElementById('inputFirma').value.trim();
+  const phone=document.getElementById('inputPhone').value.trim();
+  if(!name||!phone){alert('Bitte gib deinen Namen und deine Handynummer ein.');return;}
+  userName=name.split(' ')[0];userPhone=phone;userFirma=firma;
+  show('screen-sending');
+  const payload={name,vorname:userName,firma,phone,branche,auftragsWert,
+    score:window._quizScore||50,answers,scores,
+    hauptProblem:answers[4]||'',antwortZeit:answers[2]||'',
+    quelle:'quiz-audit.digitalpeak.de',timestamp:new Date().toISOString()};
+  try{
+    if(N8N_WEBHOOK_URL&&!N8N_WEBHOOK_URL.includes('DEIN')){
+      await fetch(N8N_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'no-cors'});
+    }
+  }catch(e){console.warn('Webhook:',e);}
+  await new Promise(r=>setTimeout(r,1400));
+  showResult();
+}
+
+function showResult(){
+  const score=window._quizScore||50;
+  const mmap={5:0,15:1,35:3,50:5};
+  const smap={5:2,20:4,35:8,45:12};
+  const missed=mmap[scores[1]]??2;
+  const stunden=smap[scores[3]]??6;
+  const loss=Math.round(missed*4*auftragsWert*0.35);
+  const pct=score<40?'70–85%':score<65?'50–70%':'40–55%';
+  const lossStr=loss>0?`${loss.toLocaleString('de-DE')} €`:(score<40?'3.000–8.000 €':score<65?'1.500–4.000 €':'800–2.000 €');
+  document.getElementById('resultHi').textContent=`Hey ${userName} 👋`;
+  document.getElementById('metricUmsatz').textContent=lossStr;
+  document.getElementById('bentoLoss').textContent=lossStr;
+  const subs={
+    low:'Das ist keine Schätzung — das ist Mathematik. Jede verpasste Anfrage hat einen Wert. Lass uns gemeinsam anschauen wie du dieses Geld zurückholst.',
+    mid:'Mit einem KI-System kannst du deine Reaktionszeit auf unter 2 Minuten senken — und damit deutlich mehr Aufträge gewinnen.',
+    high:'Dein Betrieb läuft gut. Mit dem richtigen KI-Setup kannst du deine Effizienz nochmal deutlich steigern — ohne mehr Aufwand.'
+  };
+  document.getElementById('resultSub').textContent=score<40?subs.low:score<65?subs.mid:subs.high;
+  document.getElementById('metricAnfragen').textContent=missed>0?`~${missed}/Woche`:'1–2/Woche';
+  document.getElementById('metricStunden').textContent=`~${stunden}h/Woche`;
+  document.getElementById('metricPotenzial').textContent=pct;
+  show('screen-result');
+  setTimeout(()=>{document.getElementById('floatBar').classList.remove('hidden');},1200);
+}
+
+function handleCTA(){
+  const msg=encodeURIComponent(`Hallo Manu! Ich habe gerade den KI-Check gemacht (Score: ${window._quizScore||'–'}/100). Ich bin ${userFirma?'bei '+userFirma+' ':''}in der Branche ${branche}. Mein Name ist ${userName} — ich würde gerne kurz sprechen.`);
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`,'_blank');
+}
+</script>
+</body>
+</html>
